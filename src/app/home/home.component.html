@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+
+  <title>Resume Builder</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+
+<body class="bg-light">
+
+  <div class="container my-4">
+    <main>
+      <form [formGroup]="sampleForm" >
+       
+      <div class="py-5 text-center">
+        <h2>Add Candidate</h2>
+      </div>
+
+      <div class="row g-5">
+        <div class="col-md-7 col-lg-8 ms-auto me-auto">
+          <h4 class="mb-3">Basic Info</h4>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label">First name</label>
+              <input type="text" class="form-control" formControlName="firstName"  [ngClass]="{ 'is-invalid': submitted && f['firstName'].errors }">
+              <div *ngIf="submitted && f['firstName'].errors" class="invalid-feedback">
+                <div *ngIf="f['firstName'].errors?.['required']">firstName is required</div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label">Last name</label>
+              <input type="text" class="form-control" formControlName="lastName" [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }">
+              <div *ngIf="submitted && f['lastName'].errors" class="invalid-feedback">
+                <div *ngIf="f['lastName'].errors?.['required']">lastName is required</div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Gender</label>
+              <div>
+                <div *ngFor="let gender of genders" class="form-check form-check-inline">
+                  <input class="form-check-input" [value]="gender" type="radio" formControlName="gender" [ngClass]="{ 'is-invalid': submitted && f['gender'].errors }">
+                  <label class="form-check-label">{{gender}}</label>
+                </div>
+
+                <div *ngIf="submitted && f['gender'].errors" class="invalid-feedback">
+                  <div *ngIf="f['gender'].errors?.['required']">gender is required</div>
+                </div>
+             
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" placeholder="" formControlName="email" [ngClass]="{ 'is-invalid': submitted && f['email'].errors }">
+              <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                <div *ngIf="f['email'].errors?.['required']">email is required</div>
+                <div *ngIf="f['email'].errors?.['email']">Email is invalid</div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Address</label>
+              <textarea class="form-control" placeholder="" formControlName="address" [ngClass]="{ 'is-invalid': submitted && f['address'].errors }"></textarea>
+              <div *ngIf="submitted && f['address'].errors" class="invalid-feedback">
+                <div *ngIf="f['address'].errors?.['required']">address is required</div>
+              </div>
+            </div>
+
+            <div class="col-md-5">
+              <label class="form-label">Country</label>
+              <select class="form-select" formControlName="country" [ngClass]="{ 'is-invalid': submitted && f['country'].errors }">
+                <option value="">Choose...</option>
+                <option>India</option>
+                <option>United States</option>
+              </select>
+              <div *ngIf="submitted && f['country'].errors" class="invalid-feedback">
+                <div *ngIf="f['country'].errors?.['required']">country is required</div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">State</label>
+              <select class="form-select" formControlName="state" [ngClass]="{ 'is-invalid': submitted && f['state'].errors }">
+                <option value="">Choose...</option>
+                <option>Maharashtra</option>
+                <option>Karnataka</option>
+              </select>
+              <div *ngIf="submitted && f['state'].errors" class="invalid-feedback">
+                <div *ngIf="f['state'].errors?.['required']">state is required</div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Pin / Zip</label>
+              <input type="text" class="form-control" formControlName="pinCode" [ngClass]="{ 'is-invalid': submitted && f['pinCode'].errors }">
+            </div>
+            <div *ngIf="submitted && f['pinCode'].errors" class="invalid-feedback">
+              <div *ngIf="f['pinCode'].errors?.['required']">pinCode is required</div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h4 class="mb-3">Professional Info</h4>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">
+                Choose your skills
+                <span class="small text-muted">(min 3 skills)</span>
+              </label>
+              <div class="mb-3">
+                <div *ngFor="let item of checkArr" class="form-check form-check-inline">
+                  <input class="form-check-input" (change)="addCheck(item,$event)"  type="checkbox">
+                  <label class="form-check-label">{{item}}</label>
+                </div>
+                <!-- <div *ngIf="!temp && submitted" class="text-danger">Atleast 3 skills should be selected</div> -->
+                
+                <div *ngIf="temp" class="text-danger">Atleast 3 skills should be selected</div>
+              
+              </div>
+            </div>
+          </div>
+
+          <div class="row gy-3">
+            <div class="col-12">
+              <label class="form-label">
+                <strong>
+                  Experience
+                  <span class="small text-muted">(min 2, max 5 items)</span>
+                </strong>
+              </label>
+              <div formArrayName="experience" *ngFor="let ex of experienceArray['controls']; let i = index">
+                <div [formGroupName]="i">
+                  <div class="card mx-3 mt-3">
+                    <div class="card-body">
+                      <h6 class="card-title text-muted mb-3">
+                        Experience {{i+1}}
+                        <button href="" (click)="removeExp(i)" class="float-end text-danger fw-normal">Remove</button>
+                      </h6>
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <label class="form-label">Company Name</label>
+                          <input type="text" class="form-control" formControlName="companyName" >
+                          <!-- <div *ngIf="submitted && f['companyName'].errors" class="invalid-feedback">
+                            <div *ngIf="f['companyName'].errors?.['required']">companyName is required</div>
+                          </div> -->
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Duration <span class="text-muted">(in months)</span></label>
+                          <input type="number" class="form-control" formControlName="duration" >
+                         
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Describe your responsibilities</label>
+                          <textarea class="form-control" formControlName="responsibilities" ></textarea>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="exp" class="text-center text-danger">
+                         min 2 and max 5 years of experience is required 
+                    </div>
+                  </div>
+                </div>
+              </div>
+             
+              <!-- <div class="card mx-3 mt-3">
+                <div class="card-body">
+                  <h6 class="card-title text-muted mb-3">
+                    Experience #2
+                    <a href="#" class="float-end text-danger fw-normal">Remove</a>
+                  </h6>
+                  <div class="row g-3">
+                    <div class="col-6">
+                      <label class="form-label">Company Name</label>
+                      <input type="text" class="form-control">
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Duration <span class="text-muted">(in months)</span></label>
+                      <input type="number" class="form-control">
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Describe your responsibilities</label>
+                      <textarea class="form-control"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+              <button class="d-block mt-3" (click)="addItem()" href="#">Add more experience</button>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <button class="btn btn-primary" (click)="onSubmit()" type="submit">Save Candidate</button>
+        
+            <a routerLink="/list" class="btn btn-primary float-end">List</a>
+        
+        </div>
+      </div>
+    </form>
+    </main>
+  </div>
+ 
+</body>
+
+</html>
